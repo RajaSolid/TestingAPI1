@@ -1,6 +1,10 @@
 package com.example.testingapi1;
 
+import static android.view.View.VISIBLE;
+
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +24,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private ProgressBar progressBar;
     private TeamAdapter adapter;
     private List<Team> teams = new ArrayList<>();
 
@@ -29,24 +34,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recyclerView);
+        progressBar = findViewById(R.id.progressBar);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new TeamAdapter(teams);
         recyclerView.setAdapter(adapter);
+        
 
-        fetchTeams();
-    }
 
-    private void fetchTeams() {
+        String leagueName = getIntent().getStringExtra("LEAGUE_NAME");
         ApiService apiService = ApiClient.getRetrofitInstance().create(ApiService.class);
-        Call<TeamsResponse> call = apiService.getTeams("English Premier League");
+        Call<TeamsResponse> call = apiService.getTeams(leagueName);
 
         call.enqueue(new Callback<TeamsResponse>() {
             @Override
             public void onResponse(Call<TeamsResponse> call, Response<TeamsResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    teams.clear();
                     teams.addAll(response.body().getTeams());
                     adapter.notifyDataSetChanged();
+                    recyclerView.setVisibility(View.VISIBLE);
                 }
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -56,3 +64,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
+
