@@ -33,6 +33,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
         Team team = teams.get(position);
         holder.textTeamName.setText(team.getName());
         holder.textStadium.setText(team.getStadium());
+
         Glide.with(holder.itemView.getContext())
                 .load(team.getBadgeUrl())
                 .into(holder.imageBadge);
